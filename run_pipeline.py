@@ -3,7 +3,8 @@ from src.preprocessing.build_scrip_date_batches import build_batches
 
 from src.network_analysis.build_trade_graph import (
     build_trade_graph,
-    save_graph_visual
+    save_graph_visual,
+    build_member_client_graph
 )
 from src.network_analysis.centrality_metrics import compute_centrality
 from src.network_analysis.cycle_detection import detect_cycles
@@ -59,17 +60,19 @@ def run_pipeline():
 
             print("Saving graph:", graph_name)
             save_graph_visual(G, graph_name)
-
+        cycle_nodes = detect_cycles(G)
+        for node in cycle_nodes:
+            neighbors = list(G.neighbors(node))
+            print(f"Cycle node {node} has neighbors: {neighbors}")
         # -----------------------------
         # Fast cycle detection
         # -----------------------------
-        cycle_nodes = detect_cycles(G)
 
         # -----------------------------
         # Network metrics
         # -----------------------------
         centrality = compute_centrality(G)
-
+        print("Reciprocity:", centrality["reciprocity"])
         # -----------------------------
         # Microstructure features
         # -----------------------------
@@ -88,8 +91,11 @@ def run_pipeline():
         # -----------------------------
         # Classification
         # -----------------------------
-        labels = classify_clients(risk, cycle_nodes)
-
+        labels = classify_clients(
+    risk,
+    cycle_nodes,
+    sync_scores=micro.get("sync_scores", {})
+)
         # -----------------------------
         # Evidence generation
         # -----------------------------
@@ -102,7 +108,8 @@ def run_pipeline():
     # ==================================================
     print("\nPipeline completed.")
     print("Total batches processed:", len(all_results))
-
+    G_member = build_member_client_graph(t_df)
+    print("Member-Client links:", len(G_member.edges()))
 
 if __name__ == "__main__":
     run_pipeline()
