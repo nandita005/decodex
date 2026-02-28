@@ -1,0 +1,5 @@
+# Project requirements
+pandas
+numpy
+networkx
+scipy

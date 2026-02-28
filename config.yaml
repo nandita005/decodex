@@ -1,0 +1,9 @@
+# Project configuration
+risk_weights:
+  loop: 0.25
+  reciprocity: 0.20
+  sync: 0.20
+  infra: 0.20
+  price: 0.15
+
+sync_window_seconds: 5
