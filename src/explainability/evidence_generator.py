@@ -12,13 +12,13 @@ def generate_evidence(signals, labels):
     for client in signals:
 
         # safe risk value
-        risk_score = signals.get(client, {}).get("risk", 0)
+        risk_score = signals.get(client, {}).get("network_score", 0)
 
         # build evidence entry
         evidence[client] = {
             "label": labels.get(client, "Insufficient Evidence"),
             "network_score": signals.get(client, {}).get("network_score", 0),
-            "evidence_strength": risk_score
+            "evidence_strength": signals.get(client, {}).get("network_score", 0)
         }
 
     # save json
